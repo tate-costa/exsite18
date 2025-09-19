@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Routine Tracker</title>
+</head>
+<body>
+  <h2>Routine Submission</h2>
+
+  <!-- User Selector -->
+  <label for="userSelector">Select User:</label>
+  <select id="userSelector">
+    <option value="alice">Alice</option>
+    <option value="bob">Bob</option>
+    <option value="charlie">Charlie</option>
+  </select>
+
+  <!-- Routine Form -->
+  <br><br>
+  <input type="text" id="routineName" placeholder="Routine name">
+  <input type="number" id="routineScore" placeholder="Score">
+  <button id="saveBtn">Save Routine</button>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3cJtk0c42pNAr3tsi_gQ7_9KcQS-HvgA",
+      authDomain: "extracker-d2148.firebaseapp.com",
+      databaseURL: "https://extracker-d2148-default-rtdb.firebaseio.com",
+      projectId: "extracker-d2148",
+      storageBucket: "extracker-d2148.firebasestorage.app",
+      messagingSenderId: "203023038950",
+      appId: "1:203023038950:web:4d6f96d3eac41c02b2fe27",
+      measurementId: "G-W8SRZ37JM6"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getFirestore(app);
+
+    // Save routine on button click
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const userId = document.getElementById('userSelector').value;
+      const routineName = document.getElementById('routineName').value.trim();
+      const routineScore = parseFloat(document.getElementById('routineScore').value);
+
+      if (!routineName || isNaN(routineScore)) {
+        alert("Please enter a valid routine name and score.");
+        return;
+      }
+
+      const routineRef = doc(db, `users/${userId}/routines/${routineName}`);
+      await setDoc(routineRef, {
+        name: routineName,
+        score: routineScore,
+        timestamp: new Date().toISOString()
+      });
+
+      alert('Routine saved!');
+    });
+  </script>
+</body>
+</html>
